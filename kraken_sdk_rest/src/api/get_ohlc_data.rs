@@ -22,6 +22,7 @@ pub enum Interval {
 pub struct GetOhlcDataRequest {
     client: Client,
     pair: String,
+    since: Option<std::time::SystemTime>,
     interval: Option<Interval>,
 }
 
@@ -33,11 +34,22 @@ impl GetOhlcDataRequest {
         }
     }
 
+    pub fn since(self, since: std::time::SystemTime) -> Self {
+        Self {
+            since: Some(since),
+            ..self
+        }
+    }
+
     pub async fn execute<T: DeserializeOwned>(self) -> Result<T> {
         let mut url = format!("/0/public/OHLC?pair={}", self.pair);
 
         if let Some(interval) = self.interval {
             url.push_str(&format!("&interval={}", interval as u32))
+        }
+
+        if let Some(since) = self.since {
+            url.push_str(&format!("&since={}", since.duration_since(std::time::UNIX_EPOCH).unwrap().as_secs()))
         }
 
         self.client.send_public(&url).await
@@ -83,6 +95,7 @@ impl Client {
             client: self.clone(),
             pair: pair.into(),
             interval: None,
+            since: None,
         }
     }
 }
