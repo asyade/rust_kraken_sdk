@@ -49,7 +49,7 @@ impl GetOhlcDataRequest {
         }
 
         if let Some(since) = self.since {
-            url.push_str(&format!("&since={}", since))
+            url.push_str(&format!("&since={}", format!("{}", since).replace(".", "")))
         }
 
         self.client.send_public(&url).await
