@@ -35,7 +35,7 @@ impl GetAssetPairsRequest {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct FeeSchedule(f64, f64);
+pub struct FeeSchedule(pub f64, pub f64);
 
 #[derive(Debug, Deserialize)]
 pub struct PairInfo {
